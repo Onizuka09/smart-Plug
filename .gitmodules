@@ -1,3 +1,6 @@
 [submodule "ESP-now-transmitter/Rtc"]
 	path = ESP-now-transmitter/Rtc
 	url = https://github.com/Makuna/Rtc
+[submodule "ESP-now-transmitter/lib/Rtc"]
+	path = ESP-now-transmitter/lib/Rtc
+	url = https://github.com/Makuna/Rtc

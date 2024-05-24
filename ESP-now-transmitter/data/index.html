@@ -1,0 +1,117 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Network Selector</title>
+</head>
+<body>
+    <h1>hello from ESP32</h1>
+    <h1>WiFi Network Selector</h1>
+
+    <label for="networks">Select a WiFi network (*): </label><br>
+    <select id="networks">
+        <option value="" disabled selected>Select a network...</option>
+    </select><br><br>
+
+    <label for="password">Enter password:</label><br>
+    <input type="text" id="password" nae="password"><br><br>
+
+     <label for="serverIp">Enter server IP address (*) :</label><br>
+    <input type="text" id="serverIp" name="serverIp" required><br><br>
+    
+    <p>Configure this Device to (*): </p>
+    <input type="checkbox" id="rootCheckbox" name="rootCheckbox">
+    <label for="rootCheckbox">Root</label><br>
+
+    <input type="checkbox" id="deviceCheckbox" name="deviceCheckbox">
+    <label for="deviceCheckbox">Plug</label><br><br>
+
+    <button onclick="validateAndConnect()">Submit</button>
+    <p> Note: fields with  (*) are obligatory to fill </p>
+    <script>
+        function fetchNetworks() {
+            fetch("/networks")
+            .then(response => response.json())
+            .then(data => {
+                const networksSelect = document.getElementById("networks");
+                data.forEach(network => {
+                    const option = document.createElement("option");
+                    option.value = network.ssid;
+                    option.textContent = network.ssid;
+                    networksSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Error fetching networks:", error));
+        }
+
+        function validateAndConnect() {
+            const ssid = document.getElementById("networks").value;
+            const password = document.getElementById("password").value;
+            const rootChecked = document.getElementById("rootCheckbox").checked;
+            const deviceChecked = document.getElementById("deviceCheckbox").checked;
+			const serverIp = document.getElementById("serverIp").value; 
+            // 
+            var is_root = false;// plug  
+            if (!ssid) {
+                alert("Please select a WiFi network.");
+                return;
+            }
+
+            if (!password) {
+                alert("Please enter the WiFi password.");
+                return;
+            }
+			if (!serverIp){
+				alert ("Please enter a server IP" ); 
+				return ; 
+			}
+            if (rootChecked && deviceChecked) {
+                alert("Please select only Root or Device.");
+                return;
+            }
+			if (!(rootChecked || deviceChecked))
+			{
+				alert("Please select either root or devcie "); 
+				return ;
+			}
+
+			//console.log("Root Checked:", rootChecked);
+            //console.log("Device Checked:", deviceChecked);
+            //console.log("Operation complete.");
+			var jdata = {
+				"ssid" : ssid, 
+				"pass" : password,
+				"serverIp" : serverIp,
+				"is_root":rootChecked 
+				
+			}
+			console.log ("json data is "); 
+			console.log(jdata); 
+            // Proceed with connecting to the network
+            connectToNetwork(jdata);
+        }
+
+        function connectToNetwork(data) {
+            fetch("/connect", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Successfully Submited!");
+                } else {
+                    alert("Failed to connect to network!");
+                }
+            })
+            .catch(error => console.error("Error connecting to network:", error));
+        }
+
+        // Fetch available networks when the page loads
+        window.onload = fetchNetworks;
+    </script>
+</body>
+</html>
+
