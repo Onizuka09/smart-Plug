@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> 
+    <title>REST API Client</title>
+</head>
+<body>
+	<h1>REST API Client</h1>
+	<h2>ON-Off button  </h2>
+	<button id="onOFF_btn" onclick="toogle()"> OFF </button>
+
+	<h2>Timer </h2>
+    
+	<label for ="timePeriod">choose a time period </label>
+	<select id="timePeriod">
+		<option value="600">10 min </option>
+		<option value="3600">1 Hour  </option>
+		<option value="7200">2 hours </option>
+	</select>
+
+	<button onclick="handleTimer()"> start timer </button>
+	<div id="timerDisplay"> </div>
+
+	<h2>ESP data </h2>
+	<div id ="data"></div>
+	<h2>Get All Tasks</h2>
+    <button onclick="getAllTasks()">Get All Tasks</button>
+    <div id="allTasks"></div>
+
+    <h2>Get Task by ID</h2>
+    <label for="taskId">Task ID:</label>
+    <input type="text" id="taskId">
+    <button onclick="getTaskById()">Get Task</button>
+    <div id="taskById"></div>
+
+    <h2>Create New Task</h2>
+    <label for="newTaskTitle">Title:</label>
+    <input type="text" id="newTaskTitle">
+    <label for="newTaskDescription">Description:</label>
+    <input type="text" id="newTaskDescription">
+    <button onclick="createNewTask()">Create Task</button>
+    <div id="result"></div>
+
+    <script>
+        const apiUrl = 'http://localhost:5000/api/tasks';
+     function fetchData() {
+        $.ajax({
+            url: "/dataaa",
+            type: "POST",
+			contentType: "application/json",
+            success: function(response) {
+                // Handle the response from the server
+                console.log(response);
+                $("#result").text(JSON.stringify(response));
+
+                // Call fetchData again to continue long-polling
+                fetchData();
+            },
+            error: function(xhr, status, error) {
+                // Handle errors
+                console.error("Error:", error);
+
+                // Retry after some time
+                setTimeout(fetchData, 10000); // Retry after 1 second
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        fetchData(); // Start long-polling when the document is ready
+    });
+		/*const evtSource= new EventSource("/stream"); 
+		const data_div = document.getElementById("data"); 
+		evtSource.onmessage = function(event){
+			console.log(event.data); 
+			const data = JSON.parse(event.data) ; 
+			const dataStr= JSON.stringify(data,null,2); 
+			data_div.innerHTML = dataStr; }; 
+*/
+		var timerInterval ; 
+		function handleTimer(){
+			  document.querySelectorAll('h2, label, select, button').forEach(function(element) {
+                element.style.display = 'true';
+            });
+
+			clearInterval(timerInterval);
+			var timePeriod = parseInt(document.getElementById('timePeriod').value,10);
+			var endTime = Date.now() + (timePeriod * 1000); 
+			const jdata = {
+				"timePeriod":timePeriod,
+				"endTime":	endTime};
+			console.log(jdata);
+			httpPost(`${apiUrl}/timer`,jdata,function(data){
+				document.getElementById('timerDisplay').innerHTML = JSON.stringify(data,null,2);});
+			/*	timerInterval = setInterval(function() {
+                var remainingTime = endTime - Date.now();
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerDisplay').textContent = 'Time\'s up!';
+                } else {
+                    var minutes = Math.floor(remainingTime / 60000);
+                    var seconds = Math.floor((remainingTime % 60000) / 1000);
+                    document.getElementById('timerDisplay').textContent = 'Time remaining: ' + minutes + ' minutes ' + seconds + ' seconds';
+                }
+            }, 1000);*/	
+		}
+
+		var  btn_state=false; 
+		function httpGet(url,callback){
+			fetch(url)
+			.then(response => response.json())
+				.then(data =>callback(data))
+				.catch(error=> console.error('Error:', error)); 
+		}
+		function toogle(){
+			var button = document.getElementById('onOFF_btn');
+			if (btn_state){
+				btn_state = false; 
+				button.textContent ="ON";
+				console.log(btn_state); 
+			}else {
+				btn_state=true ; 
+				button.textContent="Off";
+				console.log (btn_state); 
+			}
+		const jdata = {
+			mac_adress:'70:80:90',
+			state:btn_state }; 
+			httpPost(`${apiUrl}/ONoff`,jdata,function(data){
+				console.log(data); 
+			});
+		}
+
+
+        function getAllTasks() {
+/*            fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('allTasks').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));*/
+            httpGet(apiUrl,function (data){
+                console.log(data)
+                document.getElementById('allTasks').innerHTML =JSON.stringify(data,null,2)
+			});
+  }
+
+        function getTaskById() {
+            const taskId = document.getElementById('taskId').value;
+           /* fetch(`${apiUrl}/${taskId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('taskById').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));*/ 
+			httpGet(`${apiUrl}/${taskId}`,function(data){
+				document.getElementById('taskById').innerHTML = JSON.stringify(data,null,2) ;
+			});
+        }
+		function httpPost(url,data, callback){
+		fetch(url,{
+			method: 'POST',
+				headers: {'Content-type':'application/json'},
+				body: JSON.stringify(data),
+		})
+				.then(response => response.json())
+				.then(data => callback(data))
+				.catch(error => console.error ('Error',error)); 
+
+		}
+		function setTimer(){
+
+
+		}
+        function createNewTask() {
+            const newTaskTitle = document.getElementById('newTaskTitle').value;
+            const newTaskDescription = document.getElementById('newTaskDescription').value;
+            const newData = {
+                title: newTaskTitle,
+                description: newTaskDescription
+            };
+			httpPost(apiUrl,newData,function(data){
+ document.getElementById('newTaskResult').innerHTML = JSON.stringify(data, null, 2);
+			});
+            /*
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('newTaskResult').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));*/
+        }
+    </script>
+</body>
+</html>
+
