@@ -10,6 +10,10 @@ We created a solution where a user can control a plug via a web interface create
 - Application Side (Web): We used Symfony to manage the web application and MySQL database. Additionally, we utilized Flask as a REST API server to communicate with the gateway.
 - Gateway (Root): Manages all the plugs configured by the user and communicates with them via ESP-NOW, creating a mesh network.
 - Plug (Device): Receives configurations from the gateway and performs the specified functions.
+
+Sympfony application Code: [Link](https://github.com/baatourtayssir/project_architecture)
+
+A demonstration Video Link: [Video](https://drive.google.com/drive/u/0/folders/1g73PlBjbIHuQ6YHDv4JCbkXF6pLsu6W7) 
 ####  Step 1: Configuration
 The user configures the gateway and the plug to connect to the local network and establish communication with the server via a self-hosted webpage.
 
@@ -43,12 +47,12 @@ Currently the gateway can only configure one plug, the next version will focus m
 Set a unified programming style (probably C++) and use the OOP paradigm while implementing software design principles.
 
 # Contributors
-@Onizuka09
+- [@Onizuka09]()
 
-@Amanislh22 
+- [@Amanislh22]() 
 
-@mariemnajjar 
+- [@mariemnajjar]() 
 
-@baatourtayssir
+- [@baatourtayssir]()
 
 
