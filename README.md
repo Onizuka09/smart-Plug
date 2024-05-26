@@ -14,6 +14,7 @@ We created a solution where a user can control a plug via a web interface create
 Sympfony application Code: [Link](https://github.com/baatourtayssir/project_architecture)
 
 A demonstration Video Link: [Video](https://drive.google.com/drive/u/0/folders/1g73PlBjbIHuQ6YHDv4JCbkXF6pLsu6W7) 
+
 ####  Step 1: Configuration
 The user configures the gateway and the plug to connect to the local network and establish communication with the server via a self-hosted webpage.
 
@@ -32,11 +33,16 @@ The device gets configured and performs the specified function (On, Off, etc.). 
 In this project, I opted not to use the Arduino IDE. Instead, I created my own development environment using PlatformIO CLI and used Neovim as my IDE.
 
 ### Hardware
-ESP32 for the Gateway
-ESP32 for the Device
-Relay
-I2C LCD
-ASC-712 Current Sensor
+
+![image](./Docs/Smart_plug.png)
+
+
+- ESP32 for the Gateway
+- ESP32 for the Device
+- Relay
+- I2C LCD
+- ASC-712 Current Sensor
+
 Both the gateway and the plug are powered via USB cables.
 
 #####  Note: 
