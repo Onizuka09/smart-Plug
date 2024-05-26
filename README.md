@@ -13,7 +13,7 @@ We created a solution where a user can control a plug via a web interface create
 
 Sympfony application Code: [Link](https://github.com/baatourtayssir/project_architecture)
 
-A demonstration Video Link: [Video](https://drive.google.com/drive/u/0/folders/1g73PlBjbIHuQ6YHDv4JCbkXF6pLsu6W7) 
+A demonstration Video Link: [Video](https://drive.google.com/file/d/1TJcWJvaX6eDexHLpk7FHz62CD4a1cyaN/view) 
 
 ####  Step 1: Configuration
 The user configures the gateway and the plug to connect to the local network and establish communication with the server via a self-hosted webpage.
